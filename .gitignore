@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+
+# Folders specific to the repository
+autonomous_ws/build
+autonomous_ws/devel
