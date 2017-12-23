@@ -42,9 +42,8 @@ float r = 0.5; // An approximate value of the radius from CoM to wheels
 
 void diff_callback(const msi_phobos_sim::diff_vel &diff_vel_data) {
 	// Update the velocity and pose of Phobos given the diff_vel
-	// Not sure if Twist message supports addition/subtraction operands
 
-	
+
 
 }
 
