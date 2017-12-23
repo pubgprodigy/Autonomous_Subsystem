@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """
 Basic framework for the autonomous operations of the MSI Phobos, the
@@ -23,11 +24,11 @@ class gps_msg():
         self.lat = 0.
         self.long = 0.
 
-    def update(self, navsat_msg)
+    def update(self, navsat_msg):
         self.lat = navsat_msg.latitude
         self.long = navsat_msg.longitude
 
-    def read(self)
+    def read(self):
         return self.lat, self.long
 
 
