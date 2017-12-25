@@ -12,7 +12,7 @@ The IIT-B Mars Rover Team
 """
 
 import rospy
-import std_msgs
+from std_msgs.msg import *
 from sensor_msgs.msg import *
 import time
 
@@ -34,20 +34,20 @@ class gps_msg():
 
 def gps_callback(data):
     curr_pos.update(data)
-    rospy.loginfo("GPS hit! %f, %f", data.latitude, data.longitude)
+    rospy.loginfo("GPS hit! %s, %s", data.latitude, data.longitude)
     gps_void = False
 
 
 def imu_heading_callback(data):
-    rospy.loginfo("IMU@UDP hit! %f", data)
+    rospy.loginfo("IMU@UDP hit! %s", data)
     global_heading = 0.
     imu_void = False
 
 
 def init_listeners():
     rospy.init_node('phobos_brain', anonymous=True)
-    rospy.Subsriber("/nav_sensors/apm/gps", NavSatFix, gps_callback)
-    rospy.Subsriber("/nav_sensors/imu/heading", Float64, imu_heading_callback)
+    rospy.Subscriber("/nav_sensors/apm/gps", NavSatFix, gps_callback)
+    rospy.Subscriber("/nav_sensors/imu/heading", Float64, imu_heading_callback)
     # Subscribe to joystick message! @agrim9
     drive_pub = rospy.Publisher("/drive/vel_msg", String, queue_size=10)
     drive_pub_rate = rospy.Rate(10)
@@ -64,5 +64,6 @@ if __name__ == '__main__':
     	usleep(100)
 
     # Computation starts here
+    
 
     init_listeners()

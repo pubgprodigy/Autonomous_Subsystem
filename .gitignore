@@ -33,3 +33,6 @@ autonomous_ws_old/build
 autonomous_ws_old/devel
 autonomous_ws/build
 autonomous_ws/devel
+
+# ROS bags
+# autonomous_ws/rosbags
