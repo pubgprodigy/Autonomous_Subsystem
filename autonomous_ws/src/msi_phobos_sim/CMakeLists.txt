@@ -53,6 +53,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   diff_vel.msg
+  drive_control_vel.msg
 )
 
 ## Generate services in the 'srv' folder

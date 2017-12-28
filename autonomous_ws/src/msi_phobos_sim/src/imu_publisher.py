@@ -26,7 +26,7 @@ s.bind((host, port))
 orientation = 1.0
 
 def talker():
-    pub = rospy.Publisher("/nav_sensors/imu/heading", Float64, queue_size = 1)
+    pub = rospy.Publisher("/nav_sensors/imu/bearing", Float64, queue_size = 1)
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
