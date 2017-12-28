@@ -32,8 +32,8 @@ elif (len(sys.argv) == 1):
 	print "reading all " + numberOfFiles + " bagfiles in current directory: \n"
 	for f in listOfBagFiles:
 		print f
-	print "\n press ctrl+c in the next 10 seconds to cancel \n"
-	time.sleep(10)
+	print "\n press ctrl+c in the next 5 seconds to cancel \n"
+	time.sleep(5)
 else:
 	print "bad argument(s): " + str(sys.argv)	#shouldnt really come up
 	sys.exit(1)
