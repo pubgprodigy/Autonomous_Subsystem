@@ -117,6 +117,9 @@ public class MasterChooser extends AppCompatActivity {
 
   private String selectedInterface;
   private AutoCompleteTextView uriText;
+  private AutoCompleteTextView ipText;
+
+  private String ROS_IP;
   private Button connectButton;
   private LinearLayout connectionLayout;
 
@@ -149,12 +152,16 @@ public class MasterChooser extends AppCompatActivity {
     setContentView(R.layout.master_chooser);
     final Pattern uriPattern = RosURIPattern.URI;
     uriText = findViewById(R.id.master_chooser_uri);
+    ipText = findViewById(R.id.ip_chooser);
+
     connectButton = findViewById(R.id.master_chooser_ok);
     uriText.setThreshold(RosURIPattern.HTTP_PROTOCOL_LENGTH);
 
     ArrayAdapter<String> uriAdapter = new ArrayAdapter<>
             (this,android.R.layout.select_dialog_item,getRecentMasterURIs());
     uriText.setAdapter(uriAdapter);
+
+
 
     uriText.addTextChangedListener(new TextWatcher() {
       @Override
@@ -216,6 +223,9 @@ public class MasterChooser extends AppCompatActivity {
     connectionLayout = (LinearLayout) findViewById(R.id.connection_layout);
   }
 
+  public String getROS_IP(){
+    return ROS_IP;
+  }
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
     // If the Barcode Scanner returned a string then display that string.
@@ -237,6 +247,9 @@ public class MasterChooser extends AppCompatActivity {
   }
 
   public void okButtonClicked(View unused) {
+
+    ROS_IP= ipText.getText().toString();
+
     String tmpURI = uriText.getText().toString();
 
     // Check to see if the URI has a port.
@@ -358,6 +371,7 @@ public class MasterChooser extends AppCompatActivity {
     intent.putExtra("ROS_MASTER_CREATE_NEW", newMaster);
     intent.putExtra("ROS_MASTER_PRIVATE", isPrivate);
     intent.putExtra("ROS_MASTER_URI", uri);
+    intent.putExtra("ROS_IP",ROS_IP);
     intent.putExtra("ROS_MASTER_NETWORK_INTERFACE", selectedInterface);
     return intent;
   }

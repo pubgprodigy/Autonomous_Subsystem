@@ -122,7 +122,9 @@ public class MainActivity extends RosActivity implements LocationListener, Senso
     protected void init(NodeMainExecutor nodeMainExecutor) {
         node_sp = new SimplePublisherNode();
 
-        NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("10.42.0.56");
+
+        NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(getROS_IP());
+
         //nodeConfiguration.setTcpRosBindAddress()
 
         nodeConfiguration.setMasterUri(getMasterUri());

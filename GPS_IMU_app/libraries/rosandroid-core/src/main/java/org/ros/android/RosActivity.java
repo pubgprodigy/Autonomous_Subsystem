@@ -75,12 +75,15 @@ public abstract class RosActivity extends Activity {
             nodeMainExecutorService.startMaster(data.getBooleanExtra("ROS_MASTER_PRIVATE", true));
           } else {
             URI uri;
+            String ROS_IP;
             try {
               uri = new URI(data.getStringExtra("ROS_MASTER_URI"));
+              ROS_IP=data.getStringExtra("ROS_IP");
             } catch (URISyntaxException e) {
               throw new RosRuntimeException(e);
             }
             nodeMainExecutorService.setMasterUri(uri);
+            nodeMainExecutorService.setROS_IP(ROS_IP);
           }
           // Run init() in a new thread as a convenience since it often requires network access.
           new AsyncTask<Void, Void, Void>() {
@@ -249,6 +252,11 @@ public abstract class RosActivity extends Activity {
     return nodeMainExecutorService.getMasterUri();
   }
 
+  public String getROS_IP(){
+    //return masterChooserActivity.;
+    Preconditions.checkNotNull(nodeMainExecutorService);
+    return nodeMainExecutorService.getROS_IP();
+  }
   public String getRosHostname() {
     Preconditions.checkNotNull(nodeMainExecutorService);
     return nodeMainExecutorService.getRosHostname();

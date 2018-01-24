@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Mars Rover Team, GPS and IMU publisher</string>
+    <string name="ros_introduction">Do \'rostopic echo LatLon\' and \'rostopic echo IMU\' to get the values! If you see these topics (LatLon and IMU) in rostopic list but they are not being echoed, restart the app with proper ROS_IP </string>
+</resources>

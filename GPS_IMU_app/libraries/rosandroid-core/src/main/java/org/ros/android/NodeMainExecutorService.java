@@ -77,6 +77,7 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
   private WifiLock wifiLock;
   private RosCore rosCore;
   private URI masterUri;
+  private String ROS_IP;
   private String rosHostname;
 
   /**
@@ -239,6 +240,9 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
   public URI getMasterUri() {
     return masterUri;
   }
+
+  public void setROS_IP(String str){ROS_IP=str;}
+  public String getROS_IP(){return ROS_IP;}
 
   public void setMasterUri(URI uri) {
     masterUri = uri;
