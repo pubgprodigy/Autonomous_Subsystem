@@ -74,7 +74,7 @@ public class SimplePublisherNode extends AbstractNodeMain implements NodeMain {
                 publisher_GPS.publish(GPS_msg);
                 publisher_IMU.publish(IMU_msg);
                 // go to sleep for one second
-                Thread.sleep(100);
+                Thread.sleep(5);
             }
         };
         connectedNode.executeCancellableLoop(loop);
