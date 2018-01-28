@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/pi/mobility_ws/devel/setup.sh
