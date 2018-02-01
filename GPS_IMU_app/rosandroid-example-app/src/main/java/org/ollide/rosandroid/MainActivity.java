@@ -143,8 +143,10 @@ public class MainActivity extends RosActivity implements LocationListener, Senso
         final TextView helloTextView = findViewById(R.id.textView2);
         helloTextView.setText("Latitude: " + latitude + ", Longitude: " + longitude);
         String msg="Latitude: " + latitude + ", Longitude: " + longitude;
+        if(node_sp!=null){
+            if(node_sp.GPS_arr!=null){
         node_sp.GPS_arr[0]=latitude;
-        node_sp.GPS_arr[1]=longitude;
+        node_sp.GPS_arr[1]=longitude;}}
     }
 
     @Override
