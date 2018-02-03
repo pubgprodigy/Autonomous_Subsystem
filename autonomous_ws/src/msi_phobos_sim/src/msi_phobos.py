@@ -7,6 +7,13 @@ from sensor_msgs.msg import *
 import time
 import numpy as np
 import math
+import signal
+import sys
+
+#-----------------------------------------------------------------
+#SIGINT handler
+def sigint_handler(signal, frame):
+    sys.exit(0)
 
 #-----------------------------------------------------------------
 # Class interface for GPS type messages
@@ -69,13 +76,11 @@ def gps_callback(inp):
 	global rolling_iter, rolling_gps, gps_void
 	#-------------------------------------------------
 	# Get data from the publisher
-	data = gps_msg()
-	data.latitude = inp.data[0]
-	data.longitude = inp.data[1]
-	#rospy.loginfo("GPS hit! %s, %s", data.latitude, data.longitude)
+	
+	#rospy.loginfo("GPS hit! %s, %s", inp.data[0], inp.data[1])
 	#-------------------------------------------------
 	# Start filling the rolling array
-	rolling_gps[rolling_iter].update(data)
+	rolling_gps[rolling_iter].update_direct(inp.data[0],inp.data[1])
 	rolling_iter += 1
 	rolling_iter %= rolling_array_size
 	# Indicate absence of GPS readings if rolling array is void
@@ -165,6 +170,33 @@ def calibrate_direction(dest):
 if __name__ == '__main__':
 
 	#-----------------------------------------------------------------
+	# Declare Global variables with their default values
+	#---------------------
+	# Pub-Sub vars
+	signal.signal(signal.SIGINT, sigint_handler)
+	checkpoint_len = 0.05 # Distance (in km), of each continuous run of checkpoint
+	rover_bearing = 0. # Magnetic orientation in global frame
+	gps_offset = gps_msg()
+	gps_void = True
+	imu_void = True
+	mobility_status = 0
+	rolling_array_size = 2
+	rolling_gps = np.array([gps_msg() for i in range(rolling_array_size)])
+	rolling_iter = 0
+	#---------------------
+	# Set up destination
+	dest_lat, dest_long = 19.13160527, 72.91828806
+	destination = gps_msg()
+	destination.update_direct(dest_lat, dest_long)
+	#---------------------
+	# Set up source
+	source_lat , source_long = 19.13155686, 72.91808168
+	source = gps_msg()
+	source.update_direct(source_lat, source_long)
+	#---------------------
+	# Declare global micro seconds sleep lamda
+	usleep = lambda x: time.sleep(x / 1e6)
+	#-----------------------------------------------------------------
 	# Create Subscribers
 	rospy.Subscriber("LatLon", Float64MultiArray, gps_callback)
 	rospy.Subscriber("IMU", Float32MultiArray, imu_bearing_callback)
@@ -177,37 +209,10 @@ if __name__ == '__main__':
 	# Create ROS Node
 	rospy.init_node('phobos_brain', anonymous=True)
 	#-----------------------------------------------------------------
-	# Declare Global variables with their default values
-	#---------------------
-	# Pub-Sub vars
-	checkpoint_len = 0.05 # Distance (in km), of each continuous run of checkpoint
-	rover_bearing = 0. # Magnetic orientation in global frame
-	gps_offset = gps_msg()
-	gps_void = True
-	imu_void = True
-	mobility_status = 0
-	rolling_array_size = 5
-	rolling_gps = np.array([gps_msg() for i in range(rolling_array_size)])
-	rolling_iter = 0
-	#---------------------
-	# Set up destination
-	dest_lat = 19.13141702
-	dest_long = 72.91837903
-	destination = gps_msg()
-	destination.update_direct(dest_lat, dest_long)
-	#---------------------
-	# Set up source
-	source_lat = 19.13109811
-	source_long = 72.9182855
-	source = gps_msg()
-	source.update_direct(source_lat, source_long)
-	#---------------------
-	# Declare global micro seconds sleep lamda
-	usleep = lambda x: time.sleep(x / 1e6)
-	#-----------------------------------------------------------------
 	# Wait for GPS, IMU publishers to publish
-	while (not gps_void) and (not imu_void):
-		usleep(100)
+	while True:
+		if((not gps_void) and (not imu_void)):
+			break
 	#-----------------------------------------------------------------
 	# Get the current position
 	curr_pos = gps_msg()
@@ -215,6 +220,9 @@ if __name__ == '__main__':
 	#---------------------
 	# Get the initial offset
 	gps_offset = curr_pos - source
+	print("Current Cords: "+str(curr_pos.lat)+":"+str(curr_pos.long))
+	print("GPS Offset is: "+str(gps_offset.lat)+":"+str(gps_offset.long))
+	gps_offset.update_direct(0,0)
 	#---------------------
 	# Get initial heading angle
 	dest_bearing = get_bearing(source, destination) # Ground truth measurements
@@ -234,9 +242,11 @@ if __name__ == '__main__':
 		# Increment run_id counter
 		run_id += 1
 		#------------------------------------------------------------
+		print("Current Cords: "+str(curr_pos.lat)+":"+str(curr_pos.long))
+		print("Current Error"+str(np.abs(rover_bearing-get_bearing(curr_pos-gps_offset,destination))))
 		#Callibrate in start or when required
-		if(start==1):
-			calibrate_direction(dest_bearing) # Calibrate if required stage
+		if((start==1) or (np.abs(rover_bearing-get_bearing(curr_pos-gps_offset,destination))>20)):
+			calibrate_direction(get_bearing(curr_pos-gps_offset,destination)) # Calibrate if required stage
 			if(start==1):
 				start=0
 		#------------------------------------------------------------
@@ -244,19 +254,20 @@ if __name__ == '__main__':
 		distance_mag = get_distance(curr_pos - gps_offset, destination)*1000
 		#------------------------------------------------------------
 		#Stop if within threshold
-		if(distance_mag < destination_dist_thresh):
+		if(distance_mag-10 < destination_dist_thresh):
 			print("Target Reached, start camera node")
 			break
 		#------------------------------------------------------------
 		#Inform steer drive code about how much yet to go
-		drive_pub.publish(distance_mag)
-		rospy.loginfo("Commanded to move distance = %s", distance_mag)
+		drive_pub.publish(distance_mag-10.0)
+		rospy.loginfo("Commanded to move distance = %s", distance_mag-10.0)
 		#------------------------------------------------------------
 		# Wait for new set of GPS before proceeding
 		gps_void = True
 		rolling_iter = 0
-		while (not gps_void):
-			usleep(100)
+		while True:
+			if(not gps_void):
+				break
 		#------------------------------------------------------------
 		# Update the current Pos
 		curr_pos = np.sum(rolling_gps) / rolling_array_size # moving average
