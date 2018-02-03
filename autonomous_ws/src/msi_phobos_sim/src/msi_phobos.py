@@ -140,16 +140,14 @@ def calibrate_direction(dest):
 	global rover_bearing,ang_pub,mobility_status
 	#-------------------------------------------------
 	# Get the angle by which rover needs to turn
-	diff = rover_bearing - dest
+	diff = dest
 	#-------------------------------------------------
 	# Set mobility status to 0 before proceeding
 	mobility_status = 0
 	#-------------------------------------------------
 	# Command rover to turn by diff degrees
-	print("Commanded Rover to turn to "+str(dest))
-	count=0
-	while(count<5):
-		ang_pub.publish(dest)
+	print("Commanded Rover to turn by "+str(diff))
+	ang_pub.publish(diff)
 	#-------------------------------------------------
 	# Wait till steer has ended
 	while True:
@@ -165,6 +163,19 @@ def calibrate_direction(dest):
 	#-------------------------------------------------
 
 if __name__ == '__main__':
+
+	#-----------------------------------------------------------------
+	# Create Subscribers
+	rospy.Subscriber("LatLon", Float64MultiArray, gps_callback)
+	rospy.Subscriber("IMU", Float32MultiArray, imu_bearing_callback)
+	rospy.Subscriber("mobility_feedback", Int32, mobility_callback)
+	#-----------------------------------------------------------------
+	# Create Publishers
+	ang_pub = rospy.Publisher("/ang_msg", Float64, queue_size=10) 
+	drive_pub = rospy.Publisher("/drive_msg", Float64, queue_size=10)
+	#-----------------------------------------------------------------
+	# Create ROS Node
+	rospy.init_node('phobos_brain', anonymous=True)
 	#-----------------------------------------------------------------
 	# Declare Global variables with their default values
 	#---------------------
@@ -178,34 +189,18 @@ if __name__ == '__main__':
 	rolling_array_size = 5
 	rolling_gps = np.array([gps_msg() for i in range(rolling_array_size)])
 	rolling_iter = 0
-	#-----------------------------------------------------------------
-	# Create Subscribers
-	rospy.Subscriber("LatLon", Float64MultiArray, gps_callback)
-	rospy.Subscriber("IMU", Float32MultiArray, imu_bearing_callback)
-	rospy.Subscriber("mobility_feedback", Int32, mobility_callback)
-	#-----------------------------------------------------------------
-	# Create Publishers
-	ang_pub = rospy.Publisher("/ang_msg", Float64, queue_size=10) 
-	drive_pub = rospy.Publisher("/drive_msg", Float64, queue_size=10)
-	#-----------------------------------------------------------------
-	# Create ROS Node
-	rospy.init_node('phobos_brain', anonymous=True)
-
 	#---------------------
 	# Set up destination
-
 	dest_lat = 19.13141702
 	dest_long = 72.91837903
 	destination = gps_msg()
 	destination.update_direct(dest_lat, dest_long)
 	#---------------------
 	# Set up source
-
-	source_lat = 19.13113014
-	source_long = 72.91832172
+	source_lat = 19.13109811
+	source_long = 72.9182855
 	source = gps_msg()
 	source.update_direct(source_lat, source_long)
-
 	#---------------------
 	# Declare global micro seconds sleep lamda
 	usleep = lambda x: time.sleep(x / 1e6)
@@ -240,7 +235,7 @@ if __name__ == '__main__':
 		run_id += 1
 		#------------------------------------------------------------
 		#Callibrate in start or when required
-		if((abs(rover_bearing-get_bearing(curr_pos, destination))>20) or start==1):
+		if(start==1):
 			calibrate_direction(dest_bearing) # Calibrate if required stage
 			if(start==1):
 				start=0
