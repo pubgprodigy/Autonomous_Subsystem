@@ -1,8 +1,0 @@
-prefix=/home/pi/mobility_ws/devel
-
-Name: arm_openloop
-Description: Description of arm_openloop
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/pi/mobility_ws/devel/lib 
-Requires: 
