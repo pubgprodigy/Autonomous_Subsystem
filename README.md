@@ -7,8 +7,8 @@ The repository for autonomous subsytems codes for Mars Rover Project, IIT-Bombay
 
 -----------------------------------------------------------------------------------
 
-*[] Ball detection using GMM
-*[] Ball detection using CNN (in correspondence with Vito)
-*[] Illumination correction
-*[] Stereo_image_proc ros package testing
-*[] GUI integration with python
+- [ ] Ball detection using GMM
+- [ ] Ball detection using CNN (in correspondence with Vito)
+- [ ] Illumination correction
+- [ ] Stereo_image_proc ros package testing
+- [ ] GUI integration with python
