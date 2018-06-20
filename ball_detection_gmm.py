@@ -47,9 +47,10 @@ def edge_contour(image):
 	return area_list, contour_list
 
 area_result, contour_result = edge_contour(result) # Evaluate area and contours of circles in resultant image
+index = np.argmax(area_result) #index of the largest contour
 # Centre of the circlular contour
-x_c = np.mean(contour_result[1][:,0,0])
-y_c = np.mean(contour_result[1][:,0,1])
+x_c = np.mean(contour_result[index][:,0,0])
+y_c = np.mean(contour_result[index][:,0,1])
 # Maximum x and y coordinates of the circular contours. Required to extract the part of the original image that contains tennis ball
 x_max = np.max(contour_result[1][:,0,0])
 y_max = np.max(contour_result[1][:,0,1])
@@ -66,7 +67,7 @@ y_max = int(min(y_c+y_range, img.shape[1]))
 img_extracted = img[ x_min:x_max, y_min:y_max, :] #Extracted portion of the original image expected to contain the tennis ball
 
 bilateral_filtered_img = cv2.bilateralFilter(img_extracted, 5, 175, 175) # Processing the RGB extracted image before edge and contour detection
-area_ext, contour_ext = edge_contour(img_extracted) # Performing this process on the extracted image rather than the complete original image is more efficient
+area_ext, contour_ext = edge_contour(bilateral_filtered_img) # Performing this process on the extracted image rather than the complete original image is more efficient
 
 # If the area of the largest circular contour in resultant image from GMM is within 70 percent of the area of the largest circular contour in the extracted image,
 # Then we classify the image as containing the ball 
