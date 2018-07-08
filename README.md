@@ -13,20 +13,13 @@ The repository for autonomous subsytems codes for Mars Rover Project, IIT-Bombay
 - [ ] Stereo_image_proc ros package testing
 - [ ] GUI integration with python
 
-Message definition of sensor_msgs/LaserScan.msg: 
+---
+## Laserscan parameters for kinect2
 
-Header header
+Use `iai_kinect2` package to obtain depth map. Then, use `depthimage_to_laserscan` package to convert depth image to laserscan. We obtained the following parameters in the laser scan message.
 
-float32 angle_min
-float32 angle_max
-float32 angle_increment
+* Scanning range `-0.6 radians to 0.6 radians`, `0.45 meters to 10 meters`
+* Scanning precision (increment angle) `0.0024 radians (0.14 degrees)`
+* Time between scans `0.033 seconds`
 
-float32 time_increment
-
-float32 scan_time # Time between scans
-
-float32 range_min # maximum range value [m]
-float32 range_max # maximum range value [m]
-
-float32[] ranges # range data - (Note: values < range_min or > range_max should be discarded)    
-float32[] intensities # intensity data [device-specific units]
+Scan creates a polar map which indicates the obstacles in the 2d plane of the sensor. Obstacles are indicated by `range and theta`.  
