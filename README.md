@@ -28,5 +28,5 @@ float32 scan_time # Time between scans
 float32 range_min # maximum range value [m]
 float32 range_max # maximum range value [m]
 
-float32[] ranges # range data - (Note: values < range_min or > range_max should be discarded)
+float32[] ranges # range data - (Note: values < range_min or > range_max should be discarded)    
 float32[] intensities # intensity data [device-specific units]
