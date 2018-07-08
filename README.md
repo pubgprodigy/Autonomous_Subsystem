@@ -12,3 +12,21 @@ The repository for autonomous subsytems codes for Mars Rover Project, IIT-Bombay
 - [ ] Illumination correction
 - [ ] Stereo_image_proc ros package testing
 - [ ] GUI integration with python
+
+Message definition of sensor_msgs/LaserScan.msg: 
+
+Header header
+
+float32 angle_min
+float32 angle_max
+float32 angle_increment
+
+float32 time_increment
+
+float32 scan_time # Time between scans
+
+float32 range_min # maximum range value [m]
+float32 range_max # maximum range value [m]
+
+float32[] ranges # range data - (Note: values < range_min or > range_max should be discarded)
+float32[] intensities # intensity data [device-specific units]
